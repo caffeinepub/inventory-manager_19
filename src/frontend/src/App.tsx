@@ -9,26 +9,33 @@ import { Separator } from "@/components/ui/separator";
 import { Toaster } from "@/components/ui/sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
+  AlertTriangle,
   Bell,
   Check,
   CheckCircle2,
   Copy,
+  Home,
   LayoutDashboard,
   Package,
   Settings,
   Share2,
   Shield,
   ShieldCheck,
+  Tag,
+  TrendingUp,
   User,
 } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
 import { toast } from "sonner";
 
+type Page = "home" | "settings";
+
 const APP_URL = "https://inventory-manager-xey.caffeine.xyz";
 const canShare =
   typeof navigator !== "undefined" && typeof navigator.share === "function";
 
+// ─── Share Section ────────────────────────────────────────────────────────────
 function ShareSection() {
   const [copied, setCopied] = useState(false);
   const [sharing, setSharing] = useState(false);
@@ -54,7 +61,7 @@ function ShareSection() {
     setSharing(true);
     try {
       await navigator.share({
-        title: "Inventory Manager",
+        title: "StockVault",
         text: "Check out this inventory management app!",
         url: APP_URL,
       });
@@ -77,7 +84,6 @@ function ShareSection() {
           Invite your team or share with anyone who needs to manage inventory.
         </p>
       </div>
-
       <div className="rounded-xl border border-border bg-secondary/50 p-4">
         <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">
           Live Link
@@ -86,7 +92,6 @@ function ShareSection() {
           {APP_URL}
         </p>
       </div>
-
       <div className="flex flex-col gap-3">
         <Button
           onClick={handleCopy}
@@ -123,7 +128,6 @@ function ShareSection() {
             )}
           </AnimatePresence>
         </Button>
-
         {canShare && (
           <Button
             onClick={handleShare}
@@ -135,7 +139,6 @@ function ShareSection() {
             {sharing ? "Opening..." : "Share to Apps"}
           </Button>
         )}
-
         {!canShare && (
           <div className="rounded-xl border border-border/50 bg-muted/40 p-4 text-center">
             <Share2 className="h-5 w-5 mx-auto mb-2 text-muted-foreground" />
@@ -150,6 +153,7 @@ function ShareSection() {
   );
 }
 
+// ─── Account Section ──────────────────────────────────────────────────────────
 function AccountSection({
   onSendNotification,
 }: { onSendNotification: () => void }) {
@@ -167,19 +171,16 @@ function AccountSection({
 
   return (
     <div className="space-y-6">
-      {/* Profile Info */}
       <div className="flex items-center gap-4 p-4 rounded-xl bg-accent/40 border border-accent">
         <div className="h-14 w-14 rounded-full bg-primary flex items-center justify-center flex-shrink-0">
           <User className="h-7 w-7 text-primary-foreground" />
         </div>
         <div>
-          <p className="font-semibold text-foreground">Inventory Manager</p>
+          <p className="font-semibold text-foreground">StockVault</p>
           <p className="text-sm text-muted-foreground">Administrator</p>
         </div>
       </div>
-
       <Separator />
-
       {[
         { label: "Display Name", value: "Admin User" },
         { label: "Role", value: "Administrator" },
@@ -195,10 +196,7 @@ function AccountSection({
           </span>
         </div>
       ))}
-
       <Separator />
-
-      {/* Help Center */}
       <div className="rounded-xl border border-border bg-secondary/30 p-4 space-y-3">
         <div className="flex items-center gap-2">
           <LayoutDashboard className="h-4 w-4 text-primary" />
@@ -244,6 +242,7 @@ function AccountSection({
   );
 }
 
+// ─── Notifications Section ────────────────────────────────────────────────────
 function NotificationsSection() {
   const [push, setPush] = useState(true);
   const [email, setEmail] = useState(false);
@@ -297,6 +296,7 @@ function NotificationsSection() {
   );
 }
 
+// ─── Security Section ─────────────────────────────────────────────────────────
 const SECURITY_INDICATORS = [
   { label: "Two-Factor Authentication (2FA)", status: "Enabled" },
   { label: "Passkey Protection", status: "Active" },
@@ -313,7 +313,6 @@ const AUDIT_CHECKS = [
 
 function SecuritySection() {
   const [auditOpen, setAuditOpen] = useState(false);
-
   const auditTimestamp = new Date().toLocaleString("en-US", {
     dateStyle: "medium",
     timeStyle: "short",
@@ -329,10 +328,7 @@ function SecuritySection() {
           Your account security status and audit tools.
         </p>
       </div>
-
-      {/* Security Status Panel */}
       <div className="rounded-xl border border-green-200 bg-green-50/60 dark:bg-green-950/20 dark:border-green-800 p-5 space-y-4">
-        {/* Verified badge */}
         <div className="flex flex-col items-center gap-2 py-2">
           <div className="h-16 w-16 rounded-full bg-green-100 dark:bg-green-900/40 flex items-center justify-center">
             <ShieldCheck className="h-9 w-9 text-green-600" />
@@ -346,10 +342,7 @@ function SecuritySection() {
             </p>
           </div>
         </div>
-
         <Separator className="bg-green-200 dark:bg-green-800" />
-
-        {/* Indicators */}
         <div className="space-y-2">
           {SECURITY_INDICATORS.map((item) => (
             <div key={item.label} className="flex items-center justify-between">
@@ -364,8 +357,6 @@ function SecuritySection() {
           ))}
         </div>
       </div>
-
-      {/* Run Security Audit button */}
       <Button
         onClick={() => setAuditOpen(true)}
         data-ocid="security.audit_button"
@@ -374,8 +365,6 @@ function SecuritySection() {
         <Shield className="h-4 w-4 mr-2" />
         Run Security Audit
       </Button>
-
-      {/* Audit Result Dialog */}
       <Dialog open={auditOpen} onOpenChange={setAuditOpen}>
         <DialogContent
           data-ocid="security.dialog"
@@ -402,7 +391,6 @@ function SecuritySection() {
               </p>
             </div>
           </DialogHeader>
-
           <div className="space-y-2 py-2">
             {AUDIT_CHECKS.map((check) => (
               <div
@@ -414,13 +402,11 @@ function SecuritySection() {
               </div>
             ))}
           </div>
-
           <div className="rounded-xl bg-green-600 p-3 text-center">
             <p className="text-white font-bold text-lg">
               Security Score: 100/100
             </p>
           </div>
-
           <Button
             onClick={() => setAuditOpen(false)}
             data-ocid="security.dialog.close_button"
@@ -435,7 +421,244 @@ function SecuritySection() {
   );
 }
 
+// ─── Home Page ────────────────────────────────────────────────────────────────
+const STAT_CARDS = [
+  {
+    icon: Package,
+    label: "Total Items",
+    value: "248",
+    sub: "across all categories",
+    color: "text-primary",
+  },
+  {
+    icon: Tag,
+    label: "Categories",
+    value: "12",
+    sub: "active categories",
+    color: "text-blue-500",
+  },
+  {
+    icon: AlertTriangle,
+    label: "Low Stock",
+    value: "7",
+    sub: "items need reorder",
+    color: "text-amber-500",
+  },
+  {
+    icon: TrendingUp,
+    label: "This Month",
+    value: "+34",
+    sub: "items added",
+    color: "text-green-500",
+  },
+];
+
+const FEATURES = [
+  {
+    icon: Package,
+    title: "Real-Time Tracking",
+    desc: "Monitor stock levels with instant updates and alerts",
+  },
+  {
+    icon: Tag,
+    title: "Smart Categories",
+    desc: "Organise products with flexible tagging and filtering",
+  },
+  {
+    icon: Shield,
+    title: "Secure & Reliable",
+    desc: "100% verified security with encrypted data storage",
+  },
+];
+
+function HomePage({ onNavigate }: { onNavigate: (page: Page) => void }) {
+  return (
+    <main className="max-w-xl mx-auto px-4 py-6 space-y-8">
+      {/* Hero */}
+      <motion.section
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+        className="text-center pt-4 pb-2"
+      >
+        <div className="inline-flex items-center justify-center h-16 w-16 rounded-2xl bg-primary/10 border border-primary/20 mb-4">
+          <Package className="h-8 w-8 text-primary" />
+        </div>
+        <h1 className="text-3xl font-bold tracking-tight text-foreground mb-2">
+          StockVault
+        </h1>
+        <p className="text-base text-muted-foreground max-w-xs mx-auto">
+          Manage your inventory with ease — track, organise, and stay in
+          control.
+        </p>
+        <Button
+          onClick={() => onNavigate("settings")}
+          data-ocid="home.settings_button"
+          className="mt-6 h-11 px-6 text-sm font-semibold bg-primary text-primary-foreground hover:opacity-90 transition-opacity rounded-xl"
+        >
+          <Settings className="h-4 w-4 mr-2" />
+          Open Settings
+        </Button>
+      </motion.section>
+
+      {/* Stats */}
+      <motion.section
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, delay: 0.1 }}
+      >
+        <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">
+          Overview
+        </h2>
+        <div className="grid grid-cols-2 gap-3">
+          {STAT_CARDS.map((card, i) => (
+            <motion.div
+              key={card.label}
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.3, delay: 0.15 + i * 0.05 }}
+              className="rounded-2xl border border-border bg-card p-4 shadow-xs"
+            >
+              <div className="flex items-center gap-2 mb-2">
+                <card.icon className={`h-4 w-4 ${card.color}`} />
+                <span className="text-xs text-muted-foreground font-medium">
+                  {card.label}
+                </span>
+              </div>
+              <p className={`text-2xl font-bold ${card.color}`}>{card.value}</p>
+              <p className="text-xs text-muted-foreground mt-0.5">{card.sub}</p>
+            </motion.div>
+          ))}
+        </div>
+      </motion.section>
+
+      {/* Features */}
+      <motion.section
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, delay: 0.2 }}
+      >
+        <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">
+          Features
+        </h2>
+        <div className="space-y-3">
+          {FEATURES.map((f, i) => (
+            <motion.div
+              key={f.title}
+              initial={{ opacity: 0, x: -12 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.3, delay: 0.25 + i * 0.07 }}
+              className="flex items-start gap-4 rounded-2xl border border-border bg-card p-4 shadow-xs"
+            >
+              <div className="h-9 w-9 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
+                <f.icon className="h-5 w-5 text-primary" />
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-foreground">
+                  {f.title}
+                </p>
+                <p className="text-xs text-muted-foreground mt-0.5">{f.desc}</p>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </motion.section>
+
+      {/* Quick link to Settings */}
+      <motion.section
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.4, delay: 0.35 }}
+        className="rounded-2xl border border-primary/20 bg-primary/5 p-5 text-center"
+      >
+        <p className="text-sm text-foreground font-medium mb-3">
+          Configure your app, manage notifications, and review security
+          settings.
+        </p>
+        <Button
+          onClick={() => onNavigate("settings")}
+          data-ocid="home.settings.secondary_button"
+          variant="outline"
+          className="h-10 px-5 text-sm font-semibold border-primary/30 hover:bg-primary/10"
+        >
+          <Settings className="h-4 w-4 mr-2" />
+          Go to Settings
+        </Button>
+      </motion.section>
+    </main>
+  );
+}
+
+// ─── Settings Page ────────────────────────────────────────────────────────────
+function SettingsPage({
+  onSendNotification,
+}: { onSendNotification: () => void }) {
+  return (
+    <main className="max-w-xl mx-auto px-4 py-6">
+      <Tabs defaultValue="account">
+        <TabsList className="w-full grid grid-cols-4 mb-6 bg-secondary rounded-xl h-11">
+          <TabsTrigger
+            value="account"
+            data-ocid="settings.tab"
+            className="rounded-lg text-xs font-semibold data-[state=active]:bg-card data-[state=active]:shadow-sm"
+          >
+            <User className="h-3.5 w-3.5 mr-1" />
+            Account
+          </TabsTrigger>
+          <TabsTrigger
+            value="share"
+            data-ocid="settings.tab"
+            className="rounded-lg text-xs font-semibold data-[state=active]:bg-card data-[state=active]:shadow-sm"
+          >
+            <Share2 className="h-3.5 w-3.5 mr-1" />
+            Share
+          </TabsTrigger>
+          <TabsTrigger
+            value="notifications"
+            data-ocid="settings.tab"
+            className="rounded-lg text-xs font-semibold data-[state=active]:bg-card data-[state=active]:shadow-sm"
+          >
+            <Bell className="h-3.5 w-3.5 mr-1" />
+            Alerts
+          </TabsTrigger>
+          <TabsTrigger
+            value="security"
+            data-ocid="security.tab"
+            className="rounded-lg text-xs font-semibold data-[state=active]:bg-card data-[state=active]:shadow-sm"
+          >
+            <Shield className="h-3.5 w-3.5 mr-1" />
+            Security
+          </TabsTrigger>
+        </TabsList>
+
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+        >
+          <div className="rounded-2xl border border-border bg-card p-5 shadow-xs">
+            <TabsContent value="account" className="m-0">
+              <AccountSection onSendNotification={onSendNotification} />
+            </TabsContent>
+            <TabsContent value="share" className="m-0">
+              <ShareSection />
+            </TabsContent>
+            <TabsContent value="notifications" className="m-0">
+              <NotificationsSection />
+            </TabsContent>
+            <TabsContent value="security" className="m-0">
+              <SecuritySection />
+            </TabsContent>
+          </div>
+        </motion.div>
+      </Tabs>
+    </main>
+  );
+}
+
+// ─── App Root ─────────────────────────────────────────────────────────────────
 export default function App() {
+  const [page, setPage] = useState<Page>("home");
   const [adminBadge, setAdminBadge] = useState(false);
 
   const handleAdminClick = () => {
@@ -453,15 +676,26 @@ export default function App() {
       {/* Header */}
       <header className="sticky top-0 z-10 bg-background/80 backdrop-blur-md border-b border-border">
         <div className="max-w-xl mx-auto px-4 py-4 flex items-center gap-3">
-          <div className="h-9 w-9 rounded-xl bg-primary flex items-center justify-center">
-            <Package className="h-5 w-5 text-primary-foreground" />
-          </div>
-          <div>
-            <h1 className="text-lg font-bold leading-none tracking-tight">
-              Inventory Manager
-            </h1>
-            <p className="text-xs text-muted-foreground mt-0.5">Settings</p>
-          </div>
+          <button
+            type="button"
+            onClick={() => setPage("home")}
+            data-ocid="nav.home_link"
+            className="flex items-center gap-3 hover:opacity-80 transition-opacity"
+            aria-label="Go to Home"
+          >
+            <div className="h-9 w-9 rounded-xl bg-primary flex items-center justify-center">
+              <Package className="h-5 w-5 text-primary-foreground" />
+            </div>
+            <div>
+              <h1 className="text-lg font-bold leading-none tracking-tight">
+                StockVault
+              </h1>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                {page === "settings" ? "Settings" : "Inventory Manager"}
+              </p>
+            </div>
+          </button>
+
           <div className="ml-auto flex items-center gap-2">
             {/* Admin Panel button with badge */}
             <button
@@ -484,76 +718,73 @@ export default function App() {
                 )}
               </AnimatePresence>
             </button>
-            <Settings className="h-5 w-5 text-muted-foreground" />
           </div>
         </div>
       </header>
 
-      {/* Main */}
-      <main className="max-w-xl mx-auto px-4 py-6">
-        <Tabs defaultValue="account">
-          <TabsList className="w-full grid grid-cols-4 mb-6 bg-secondary rounded-xl h-11">
-            <TabsTrigger
-              value="account"
-              data-ocid="settings.tab"
-              className="rounded-lg text-xs font-semibold data-[state=active]:bg-card data-[state=active]:shadow-sm"
-            >
-              <User className="h-3.5 w-3.5 mr-1" />
-              Account
-            </TabsTrigger>
-            <TabsTrigger
-              value="share"
-              data-ocid="settings.tab"
-              className="rounded-lg text-xs font-semibold data-[state=active]:bg-card data-[state=active]:shadow-sm"
-            >
-              <Share2 className="h-3.5 w-3.5 mr-1" />
-              Share
-            </TabsTrigger>
-            <TabsTrigger
-              value="notifications"
-              data-ocid="settings.tab"
-              className="rounded-lg text-xs font-semibold data-[state=active]:bg-card data-[state=active]:shadow-sm"
-            >
-              <Bell className="h-3.5 w-3.5 mr-1" />
-              Alerts
-            </TabsTrigger>
-            <TabsTrigger
-              value="security"
-              data-ocid="security.tab"
-              className="rounded-lg text-xs font-semibold data-[state=active]:bg-card data-[state=active]:shadow-sm"
-            >
-              <Shield className="h-3.5 w-3.5 mr-1" />
-              Security
-            </TabsTrigger>
-          </TabsList>
-
+      {/* Page Content */}
+      <AnimatePresence mode="wait">
+        {page === "home" ? (
           <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
+            key="home"
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 20 }}
+            transition={{ duration: 0.25 }}
           >
-            <div className="rounded-2xl border border-border bg-card p-5 shadow-xs">
-              <TabsContent value="account" className="m-0">
-                <AccountSection
-                  onSendNotification={() => setAdminBadge(true)}
-                />
-              </TabsContent>
-              <TabsContent value="share" className="m-0">
-                <ShareSection />
-              </TabsContent>
-              <TabsContent value="notifications" className="m-0">
-                <NotificationsSection />
-              </TabsContent>
-              <TabsContent value="security" className="m-0">
-                <SecuritySection />
-              </TabsContent>
-            </div>
+            <HomePage onNavigate={setPage} />
           </motion.div>
-        </Tabs>
-      </main>
+        ) : (
+          <motion.div
+            key="settings"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            transition={{ duration: 0.25 }}
+          >
+            <SettingsPage onSendNotification={() => setAdminBadge(true)} />
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-      {/* Footer */}
-      <footer className="text-center py-8 px-4">
+      {/* Bottom Navigation */}
+      <nav className="fixed bottom-0 left-0 right-0 z-20 bg-background/90 backdrop-blur-md border-t border-border">
+        <div className="max-w-xl mx-auto flex">
+          <button
+            type="button"
+            onClick={() => setPage("home")}
+            data-ocid="nav.home_tab"
+            className={`flex-1 flex flex-col items-center gap-1 py-3 text-xs font-semibold transition-colors ${
+              page === "home"
+                ? "text-primary"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <Home
+              className={`h-5 w-5 ${page === "home" ? "text-primary" : ""}`}
+            />
+            Home
+          </button>
+          <button
+            type="button"
+            onClick={() => setPage("settings")}
+            data-ocid="nav.settings_tab"
+            className={`flex-1 flex flex-col items-center gap-1 py-3 text-xs font-semibold transition-colors ${
+              page === "settings"
+                ? "text-primary"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <Settings
+              className={`h-5 w-5 ${page === "settings" ? "text-primary" : ""}`}
+            />
+            Settings
+          </button>
+        </div>
+      </nav>
+
+      {/* Footer — above bottom nav padding */}
+      <footer className="text-center pt-8 pb-24 px-4">
         <p className="text-xs text-muted-foreground">
           © {new Date().getFullYear()}. Built with ♥ using{" "}
           <a
